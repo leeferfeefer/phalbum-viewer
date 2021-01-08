@@ -12,6 +12,7 @@
     "react-image-gallery": "^1.0.8",
     "react-loader-spinner": "^3.1.14",
     "react-scripts": "4.0.1",
+    "resize-base64": "^1.0.12",
     "web-vitals": "^0.2.4"
   },
   "scripts": {

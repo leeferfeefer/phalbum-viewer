@@ -2,7 +2,7 @@ import axios from "axios";
 
 const instance = axios.create({
     timeout: 5000,
-    baseURL: `http://${process.env.REACT_APP_HOST}:3001/api`
+    baseURL: `http://${process.env.REACT_APP_HOST}:3000/api`
 });
 
 
@@ -13,7 +13,7 @@ const getImages = async () => {
     } catch (error) {
         console.log("Error getting images! ", error.message);
     }
-    return response?.data?.images;
+    return response?.data;
 };
 
 export default {

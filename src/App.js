@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import ImageGallery from 'react-image-gallery';
 import AxiosService from './service/Axios.service';
 import Loader from "react-loader-spinner";
+import Image from './model/Image';
 
 function App() {
   const [images, setImages] = useState([]);
@@ -9,14 +10,16 @@ function App() {
   const [isLoaderVisible, setIsLoaderVisible] = useState(false);
 
   useEffect(() => {
-    getImages();
+    setInterval(getImages, 30000);  
   }, []);
 
   const getImages = async () => {
     setIsError(false);
     setIsLoaderVisible(true);
-    const images = await AxiosService.getImages();
+    const imagesDTO = await AxiosService.getImages();
     setIsLoaderVisible(false);
+
+    const images = await Image.convertImagesDTOToImages(imagesDTO)
 
     if (images) {    
       setImages(images);    
@@ -26,7 +29,7 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <div>
         {isLoaderVisible && 
           <Loader
             type="Puff"
@@ -36,7 +39,7 @@ function App() {
           />
         }
         {!isError ?        
-          <ImageGallery items={images}/>                
+          <ImageGallery items={images} autoPlay/>                
           :
           <div style={{color: 'red'}}> Error! Try again.</div>
         }
