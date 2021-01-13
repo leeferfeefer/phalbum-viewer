@@ -10,7 +10,8 @@ function App() {
   const [isLoaderVisible, setIsLoaderVisible] = useState(false);
 
   useEffect(() => {
-    setInterval(getImages, 30000);  
+    getImages();
+    setInterval(getImages, 30000*2*5);  
   }, []);
 
   const getImages = async () => {
@@ -29,7 +30,7 @@ function App() {
   };
 
   return (
-    <div>
+    <div id="container" style={{flex: 1, height: '100%', width: '100%'}}>
         {isLoaderVisible && 
           <Loader
             type="Puff"
@@ -39,7 +40,14 @@ function App() {
           />
         }
         {!isError ?        
-          <ImageGallery items={images} autoPlay/>                
+          <ImageGallery             
+            items={images} 
+            autoPlay
+            showNav={false}
+            showThumbnails={true}
+            thumbnailPosition={'left'}
+            slideInterval={5000}    
+          />                
           :
           <div style={{color: 'red'}}> Error! Try again.</div>
         }
