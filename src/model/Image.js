@@ -4,7 +4,7 @@ const convertImagesDTOToImages = async (imageDTOArray) => {
     for (const image of imageDTOArray) {          
         images.push({
             original: image.imageBase64,
-            thumbnail: await _resizeImage(image.imageBase64, 100, 100)
+            thumbnail: await _resizeImage(image.imageBase64, 50, 50)
         })
     }
 

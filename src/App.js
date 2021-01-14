@@ -30,7 +30,7 @@ function App() {
   };
 
   return (
-    <div id="container" style={{flex: 1, height: '100%', width: '100%'}}>
+    <div id="container">
         {isLoaderVisible && 
           <Loader
             type="Puff"
@@ -46,7 +46,7 @@ function App() {
             showNav={false}
             showThumbnails={true}
             thumbnailPosition={'left'}
-            slideInterval={5000}    
+            slideInterval={10000}    
           />                
           :
           <div style={{color: 'red'}}> Error! Try again.</div>

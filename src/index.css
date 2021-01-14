@@ -16,9 +16,28 @@ code {
 
 
 #container {
-  -webkit-transform: rotate(90deg);
+  /* -webkit-transform: rotate(90deg);
   -moz-transform: rotate(90deg);
   -o-transform: rotate(90deg);
   -ms-transform: rotate(90deg);
-  transform: rotate(90deg);
+  transform: rotate(90deg); */
 }
+
+/* .image-gallery-image {
+  width: 3000px;
+  height: 3000px;
+} */
+
+.image-gallery-slides {
+  text-align: center;
+  }
+  .image-gallery-slide {
+  background: #000000;
+  }
+  .image-gallery-slide img{
+  width: auto;
+  height: 300px;
+  }
+  .image-gallery-content.fullscreen .image-gallery-slide img{
+    height: auto;
+    }
