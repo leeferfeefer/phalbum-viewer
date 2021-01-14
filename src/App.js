@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import ImageGallery from 'react-image-gallery';
 import AxiosService from './service/Axios.service';
 import Loader from "react-loader-spinner";
@@ -11,37 +11,42 @@ function App() {
   const [isError, setIsError] = useState(false); 
   const [isLoaderVisible, setIsLoaderVisible] = useState(false);
   const [batchIndex, setBatchIndex] = useState(0);
-  const [totalImageAmount, setTotalImageAmount] = useState(0);
+  const galleryRef = useRef(null);
 
   useEffect(() => {
     getImages(true);    
   }, []);
 
   const getImages = async (initial) => {
-    console.log("is iniital: ", initial)
+    const currentIndex = galleryRef.current.getCurrentIndex();
     setIsError(false);
-    if (initial) setIsLoaderVisible(true);
-    const imageResponse = await AxiosService.getImages(batchIndex, BATCH_SIZE);
-    if (initial) setIsLoaderVisible(false);
+    let imageResponse;
+    let newImages;
+    try {
+      if (initial) setIsLoaderVisible(true);
+      imageResponse = await AxiosService.getImages(batchIndex, BATCH_SIZE);
+      if (initial) setIsLoaderVisible(false);
+      
+      if (imageResponse?.images?.length > 0) {
+        newImages = await Image.convertImagesDTOToImages(imageResponse.images)
+        if (images.length === 0) {
+          setImages(newImages);
+        } else {
+          setImages([...images, ...newImages]);  
+          galleryRef.current.slideToIndex(currentIndex);
+        }        
+        setBatchIndex(batchIndex+1); 
+      }     
 
-    console.log("imageResponse", imageResponse)
-
-
-    const images = await Image.convertImagesDTOToImages(imageResponse.images)
-    setTotalImageAmount(imageResponse.total);
-
-    if (images) {    
-      setImages(images);    
-    } else {
+    } catch (error) {
+      if (initial) setIsLoaderVisible(false);
       if (initial) setIsError(true);
-    } 
+    }    
   };
 
   const onSlide = (currentIndex) => {
-    if (currentIndex === images.length-1) {
+    if (images.length > 0 && currentIndex === images.length-1) {
       getImages();
-      if (batchIndex+1 * BATCH_SIZE < totalImageAmount)
-      setBatchIndex(batchIndex++);
     }
   }
 
@@ -56,7 +61,8 @@ function App() {
           />
         }
         {!isError ?        
-          <ImageGallery             
+          <ImageGallery   
+            ref={galleryRef}
             items={images} 
             autoPlay
             showNav={false}

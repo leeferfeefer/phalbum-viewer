@@ -7,19 +7,8 @@ const instance = axios.create({
 
 
 const getImages = async (index, chunkSize) => {
-    const defaultImageResponse = {
-        images: [],
-        total: 0
-    };
-    try {
-        const response = await instance.get(`images?index=${index}&chunkSize=${chunkSize}`);
-        console.log("response", response)
-        const data = response?.data;
-        return data ?? defaultImageResponse;;
-    } catch (error) {
-        console.log("Error getting images! ", error.message);
-    }
-    return defaultImageResponse;
+    const response = await instance.get(`images?index=${index}&chunkSize=${chunkSize}`);
+    return response?.data;        
 };
 
 export default {
