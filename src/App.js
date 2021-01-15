@@ -26,7 +26,7 @@ function App() {
       if (initial) setIsLoaderVisible(true);
       imageResponse = await AxiosService.getImages(batchIndex, BATCH_SIZE);
       if (initial) setIsLoaderVisible(false);
-      
+      console.log("imageResponse", imageResponse)
       if (imageResponse?.images?.length > 0) {
         newImages = await Image.convertImagesDTOToImages(imageResponse.images)
         if (images.length === 0) {
@@ -39,6 +39,7 @@ function App() {
       }     
 
     } catch (error) {
+      console.log("error", error)
       if (initial) setIsLoaderVisible(false);
       if (initial) setIsError(true);
     }    
