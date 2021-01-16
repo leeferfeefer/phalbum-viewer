@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
-import ImageGallery from 'react-image-gallery';
+import ImageGallery from './component/ImageGallery';
 import AxiosService from './service/Axios.service';
 import Loader from "react-loader-spinner";
 import Image from './model/Image';
@@ -11,14 +11,14 @@ function App() {
   const [isError, setIsError] = useState(false); 
   const [isLoaderVisible, setIsLoaderVisible] = useState(false);
   const [batchIndex, setBatchIndex] = useState(0);
-  const galleryRef = useRef(null);
+  // const galleryRef = useRef(null);
 
   useEffect(() => {
     getImages(true);    
   }, []);
 
   const getImages = async (initial) => {
-    const currentIndex = galleryRef.current.getCurrentIndex();
+    // const currentIndex = galleryRef.current.getCurrentIndex();
     setIsError(false);
     let imageResponse;
     let newImages;
@@ -33,7 +33,7 @@ function App() {
           setImages(newImages);
         } else {
           setImages([...images, ...newImages]);  
-          galleryRef.current.slideToIndex(currentIndex);
+          // galleryRef.current.slideToIndex(currentIndex);
         }        
         setBatchIndex(batchIndex+1); 
       }     
@@ -45,11 +45,11 @@ function App() {
     }    
   };
 
-  const onSlide = (currentIndex) => {
-    if (images.length > 0 && currentIndex === images.length-1) {
-      getImages();
-    }
-  }
+  // const onSlide = (currentIndex) => {
+  //   if (images.length > 0 && currentIndex === images.length-1) {
+  //     getImages();
+  //   }
+  // }
 
   return (
     <div id="container">
@@ -62,16 +62,9 @@ function App() {
           />
         }
         {!isError ?        
-          <ImageGallery   
-            ref={galleryRef}
-            items={images} 
-            autoPlay
-            showNav={false}
-            showThumbnails={true}
-            thumbnailPosition={'left'}
-            slideInterval={10000}    
-            onSlide={onSlide}
-          />                
+            <ImageGallery
+              images={images}
+            />
           :
           <div style={{color: 'red'}}> Error! Try again.</div>
         }
