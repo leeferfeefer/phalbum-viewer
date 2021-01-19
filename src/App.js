@@ -14,21 +14,21 @@ function App() {
   const [isError, setIsError] = useState(false); 
   const [isLoaderVisible, setIsLoaderVisible] = useState(false);
   const [batchIndex, setBatchIndex] = useState(0);
-  const galleryRef = useRef(null);
   const handle = useFullScreenHandle();
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isWaitingForImages, setIsWaitingForImages] = useState(false);
 
   useEffect(() => {
     getImages(true);    
   }, []);
 
   const getImages = async (initial) => {
-    const currentIndex = galleryRef.current.getCurrentIndex();
     setIsError(false);
     let imageResponse;
     let newImages;
     try {
       if (initial) setIsLoaderVisible(true);
+      setIsWaitingForImages(true);
       imageResponse = await AxiosService.getImages(batchIndex, BATCH_SIZE);
       if (initial) setIsLoaderVisible(false);
       console.log("imageResponse", imageResponse)
@@ -38,11 +38,10 @@ function App() {
           setImages(newImages);
         } else {
           setImages([...images, ...newImages]);  
-          galleryRef.current.goToIndex(currentIndex);
         }        
         setBatchIndex(batchIndex+1); 
       }     
-
+      setIsWaitingForImages(false);
     } catch (error) {
       console.log("error", error)
       if (initial) setIsLoaderVisible(false);
@@ -91,18 +90,20 @@ function App() {
                 images={images}
                 onSlide={onSlide}
                 slideDuration={10000}
-                ref={galleryRef}
+                isWaitingForImages={isWaitingForImages}
               />
-              <button 
-                css={css`
-                  position: absolute;
-                  top: 0px; 
-                  left 0px;
-                `}
-                onClick={toggleFullScreen}
-                >
-                  {`[  ]`}
-              </button>
+              {!isFullScreen && 
+                <button 
+                  css={css`
+                    position: absolute;
+                    top: 0px; 
+                    left 0px;
+                  `}
+                  onClick={toggleFullScreen}
+                  >
+                    {`[  ]`}
+                </button>
+              }
             </>
           :
           <div style={{color: 'red'}}> Error! Try again.</div>

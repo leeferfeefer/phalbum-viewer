@@ -9,12 +9,14 @@ const ImageGallery = (props, ref) => {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            if (currentIndex === props.images.length-1) {
-                setCurrentIndex(0);
-            } else {
-                setCurrentIndex(currentIndex+1);
-            }
-            props.onSlide(currentIndex);
+            if (!props.isWaitingForImages) {
+                if (currentIndex === props.images.length-1) {
+                    setCurrentIndex(0);
+                } else {
+                    setCurrentIndex(currentIndex+1);
+                }
+                props.onSlide(currentIndex);
+            }            
         }, 10000); // in ms
         return () => clearInterval(interval);
     });
