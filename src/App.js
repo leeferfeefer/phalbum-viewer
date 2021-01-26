@@ -16,7 +16,7 @@ function App() {
   const [batchIndex, setBatchIndex] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isWaitingForImages, setIsWaitingForImages] = useState(false);
-  const galleryRef = useRef(null);
+  const galleryRef = useRef();
   const fullScreenHandle = useFullScreenHandle();
 
   useEffect(() => {

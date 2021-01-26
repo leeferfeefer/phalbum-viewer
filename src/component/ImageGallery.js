@@ -1,18 +1,18 @@
 /** @jsxImportSource @emotion/react */
 import {css, jsx } from '@emotion/react'
 
-import React, {useState, useEffect, useImperativeHandle, forwardRef} from 'react';
+import React, {useState, useEffect, useImperativeHandle, forwardRef, useRef} from 'react';
 
 
 const ImageGallery = (props, ref) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const {images, isWaitingForImages, onSlide} = props;
-
-    let intervalTimer;
+    const intervalTimerRef = useRef();
 
     const startTimer = () => {
-        if (!!!intervalTimer) {
-            intervalTimer = setInterval(() => {
+        if (!!!intervalTimerRef.current) {
+            console.log("creating timer...");
+            intervalTimerRef.current = setInterval(() => {
                 if (!isWaitingForImages) {
                     if (currentIndex === images.length-1) {
                         setCurrentIndex(0);
@@ -26,14 +26,17 @@ const ImageGallery = (props, ref) => {
     };
 
     const stopTimer = () => {
-        !!intervalTimer && clearInterval(intervalTimer);
-        intervalTimer = undefined;
+        if (!!intervalTimerRef.current) {
+            clearInterval(intervalTimerRef.current);
+            intervalTimerRef.current = undefined;
+            console.log("destroying timer...");
+        }
     };
 
     useEffect(() => {
         startTimer();
         return () => stopTimer();
-    });
+    }, []);
 
     useImperativeHandle(ref, () => ({
         getCurrentIndex: () => {
@@ -43,6 +46,7 @@ const ImageGallery = (props, ref) => {
             setCurrentIndex(index);
         },
         goRight: () => {       
+            console.log("calling stop timer...")
             stopTimer();
             const newIndex = currentIndex+1;
             if (newIndex < images.length) {            
@@ -51,6 +55,7 @@ const ImageGallery = (props, ref) => {
             }            
         },
         goLeft: () => {
+            console.log("calling stop timer...")
             stopTimer();
             const newIndex = currentIndex-1;
             if (newIndex > -1) {            
