@@ -5,7 +5,7 @@ import ImageGallery from './component/ImageGallery';
 import AxiosService from './service/Axios.service';
 import Loader from "react-loader-spinner";
 import Image from './model/Image';
-import {FullScreen, useFullScreenHandle} from "react-full-screen";
+import ReactFullscreen from 'react-easyfullscreen';
 
 const BATCH_SIZE = 5;
 
@@ -17,7 +17,6 @@ function App() {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isWaitingForImages, setIsWaitingForImages] = useState(false);
   const galleryRef = useRef();
-  const fullScreenHandle = useFullScreenHandle();
 
   useEffect(() => {
     getImages(true);    
@@ -49,20 +48,6 @@ function App() {
     }    
     setIsWaitingForImages(false);
   };
-  
-  const toggleFullScreen = () => {
-    if (isFullScreen) {
-      fullScreenHandle.exit();
-    } else {
-      fullScreenHandle.enter();
-    }
-  }
-
-  const handleFullScreenChange = useCallback((state, handle) => {
-    if (handle === fullScreenHandle) {
-      setIsFullScreen(state);
-    }    
-  }, [fullScreenHandle]);
 
   const toggleRight = () => {
     galleryRef.current.goRight();
@@ -92,77 +77,80 @@ function App() {
         height: ${window.innerHeight}px;
         width: ${window.innerWidth}px;`               
     }>
-      <FullScreen handle={fullScreenHandle} onChange={handleFullScreenChange}>
-        {isLoaderVisible && 
-          <Loader
-            type="Puff"
-            color="#00BFFF"
-            height={100}
-            width={100}        
-          />
-        }
-        {!isError ?        
-            <>
-              <ImageGallery
-                ref={galleryRef}
-                images={images}
-                onSlide={onSlide}
-                slideDuration={10000}
-                isWaitingForImages={isWaitingForImages}
+      <ReactFullscreen>
+        {({ ref, onToggle }) => (
+          <div ref={ref}>
+            {isLoaderVisible && 
+              <Loader
+                type="Puff"
+                color="#00BFFF"
+                height={100}
+                width={100}        
               />
-              <button 
-                css={css`
-                  position: absolute;
-                  top: 0px; 
-                  left: 0px;
-                  width: 50px;
-                  height: 20px;
-                `}
-                onClick={toggleFullScreen}
-                >
-                  {isFullScreen ? `[ x ]` : `[  ]`}
-              </button>           
-              <button 
-              css={css`
-                position: absolute;
-                top: 20px; 
-                left: 0px;
-                width: 50px;
-                height: 20px;
-              `}
-              onClick={toggleRight}
-              >
-                {`-->`}
-              </button>
-              <button 
-                css={css`
-                  position: absolute;
-                  top: 40px; 
-                  left: 0px;
-                  width: 50px;
-                  height: 20px;
-                `}
-                onClick={toggleLeft}
-                >
-                  {`<--`}
-              </button>
-              <button 
-                css={css`
-                  position: absolute;
-                  top: 60px; 
-                  left: 0px;
-                  width: 50px;
-                  height: 20px;
-                `}
-                onClick={toggleTimer}
-                >
-                  {`:)`}
-              </button>              
-            </>
-          :
-          <div style={{color: 'red'}}> Error! Try again.</div>
-        }
-      </FullScreen>    
+            }
+            {!isError ?        
+                <>
+                  <ImageGallery
+                    ref={galleryRef}
+                    images={images}
+                    onSlide={onSlide}
+                    slideDuration={10000}
+                    isWaitingForImages={isWaitingForImages}
+                  />
+                  <button 
+                    css={css`
+                      position: absolute;
+                      top: 0px; 
+                      left: 0px;
+                      width: 50px;
+                      height: 20px;
+                    `}
+                    onClick={onToggle}>
+                      {`[  ]`}
+                  </button>           
+                  <button 
+                  css={css`
+                    position: absolute;
+                    top: 20px; 
+                    left: 0px;
+                    width: 50px;
+                    height: 20px;
+                  `}
+                  onClick={toggleRight}
+                  >
+                    {`-->`}
+                  </button>
+                  <button 
+                    css={css`
+                      position: absolute;
+                      top: 40px; 
+                      left: 0px;
+                      width: 50px;
+                      height: 20px;
+                    `}
+                    onClick={toggleLeft}
+                    >
+                      {`<--`}
+                  </button>
+                  <button 
+                    css={css`
+                      position: absolute;
+                      top: 60px; 
+                      left: 0px;
+                      width: 50px;
+                      height: 20px;
+                    `}
+                    onClick={toggleTimer}
+                    >
+                      {`:)`}
+                  </button>              
+                </>
+              :
+              <div style={{color: 'red'}}> Error! Try again.</div>
+            }
+          </div>
+        )}
+      </ReactFullscreen>
     </div>
   );
 }
