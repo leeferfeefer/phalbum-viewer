@@ -106,58 +106,54 @@ function App() {
                 slideDuration={10000}
                 isWaitingForImages={isWaitingForImages}
               />
-              {!isFullScreen && 
-                <>
-                  <button 
-                    css={css`
-                      position: absolute;
-                      top: 0px; 
-                      left: 0px;
-                      width: 50px;
-                      height: 20px;
-                    `}
-                    onClick={toggleFullScreen}
-                    >
-                      {`[  ]`}
-                  </button>           
-                  <button 
-                  css={css`
-                    position: absolute;
-                    top: 20px; 
-                    left: 0px;
-                    width: 50px;
-                    height: 20px;
-                  `}
-                  onClick={toggleRight}
-                  >
-                    {`-->`}
-                  </button>
-                  <button 
-                    css={css`
-                      position: absolute;
-                      top: 40px; 
-                      left: 0px;
-                      width: 50px;
-                      height: 20px;
-                    `}
-                    onClick={toggleLeft}
-                    >
-                      {`<--`}
-                  </button>
-                  <button 
-                    css={css`
-                      position: absolute;
-                      top: 60px; 
-                      left: 0px;
-                      width: 50px;
-                      height: 20px;
-                    `}
-                    onClick={toggleTimer}
-                    >
-                      {`:)`}
-                  </button>
-                </>     
-              }
+              <button 
+                css={css`
+                  position: absolute;
+                  top: 0px; 
+                  left: 0px;
+                  width: 50px;
+                  height: 20px;
+                `}
+                onClick={toggleFullScreen}
+                >
+                  {`[  ]`}
+              </button>           
+              <button 
+              css={css`
+                position: absolute;
+                top: 20px; 
+                left: 0px;
+                width: 50px;
+                height: 20px;
+              `}
+              onClick={toggleRight}
+              >
+                {`-->`}
+              </button>
+              <button 
+                css={css`
+                  position: absolute;
+                  top: 40px; 
+                  left: 0px;
+                  width: 50px;
+                  height: 20px;
+                `}
+                onClick={toggleLeft}
+                >
+                  {`<--`}
+              </button>
+              <button 
+                css={css`
+                  position: absolute;
+                  top: 60px; 
+                  left: 0px;
+                  width: 50px;
+                  height: 20px;
+                `}
+                onClick={toggleTimer}
+                >
+                  {`:)`}
+              </button>              
             </>
           :
           <div style={{color: 'red'}}> Error! Try again.</div>

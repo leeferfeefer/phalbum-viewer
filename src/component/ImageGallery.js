@@ -6,12 +6,12 @@ import React, {useState, useEffect, useImperativeHandle, forwardRef} from 'react
 
 const ImageGallery = (props, ref) => {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [intervalTimer, setIntervalTimer] = useState();
     const {images, isWaitingForImages, onSlide} = props;
-    let intervalTimer;
 
     const startTimer = () => {
         if (!!!intervalTimer) {
-            intervalTimer = setInterval(() => {
+            const _intervalTimer = setInterval(() => {
                 if (!isWaitingForImages) {
                     if (currentIndex === images.length-1) {
                         setCurrentIndex(0);
@@ -21,17 +21,19 @@ const ImageGallery = (props, ref) => {
                     onSlide(currentIndex);
                 }            
             }, 10000); // in ms
+            setIntervalTimer(_intervalTimer);
         }        
     };
 
     const stopTimer = () => {
         !!intervalTimer && clearInterval(intervalTimer);
+        setIntervalTimer(undefined);
     };
 
-    useEffect(() => {
-        startTimer();
-        return () => stopTimer();
-    });
+    // useEffect(() => {
+    //     startTimer();
+    //     return () => stopTimer();
+    // }, []);
 
     useImperativeHandle(ref, () => ({
         getCurrentIndex: () => {
