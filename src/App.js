@@ -14,9 +14,10 @@ function App() {
   const [isError, setIsError] = useState(false); 
   const [isLoaderVisible, setIsLoaderVisible] = useState(false);
   const [batchIndex, setBatchIndex] = useState(0);
-  const handle = useFullScreenHandle();
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isWaitingForImages, setIsWaitingForImages] = useState(false);
+  const galleryRef = useRef(null);
+  const handle = useFullScreenHandle();
 
   useEffect(() => {
     getImages(true);    
@@ -41,12 +42,12 @@ function App() {
         }        
         setBatchIndex(batchIndex+1); 
       }     
-      setIsWaitingForImages(false);
     } catch (error) {
       console.log("error", error)
       if (initial) setIsLoaderVisible(false);
       if (initial) setIsError(true);
     }    
+    setIsWaitingForImages(false);
   };
   
   const toggleFullScreen = () => {
@@ -57,6 +58,18 @@ function App() {
       handle.enter();
       setIsFullScreen(true);
     }
+  }
+
+  const toggleRight = () => {
+    galleryRef.current.goRight();
+  };
+
+  const toggleLeft = () => {
+    galleryRef.current.goLeft();
+  };
+
+  const toggleTimer = () => {
+    galleryRef.current.startTimer();
   }
 
   const onSlide = (currentIndex) => {
@@ -87,22 +100,63 @@ function App() {
         {!isError ?        
             <>
               <ImageGallery
+                ref={galleryRef}
                 images={images}
                 onSlide={onSlide}
                 slideDuration={10000}
                 isWaitingForImages={isWaitingForImages}
               />
               {!isFullScreen && 
-                <button 
+                <>
+                  <button 
+                    css={css`
+                      position: absolute;
+                      top: 0px; 
+                      left: 0px;
+                      width: 50px;
+                      height: 20px;
+                    `}
+                    onClick={toggleFullScreen}
+                    >
+                      {`[  ]`}
+                  </button>           
+                  <button 
                   css={css`
                     position: absolute;
-                    top: 0px; 
-                    left 0px;
+                    top: 20px; 
+                    left: 0px;
+                    width: 50px;
+                    height: 20px;
                   `}
-                  onClick={toggleFullScreen}
+                  onClick={toggleRight}
                   >
-                    {`[  ]`}
-                </button>
+                    {`-->`}
+                  </button>
+                  <button 
+                    css={css`
+                      position: absolute;
+                      top: 40px; 
+                      left: 0px;
+                      width: 50px;
+                      height: 20px;
+                    `}
+                    onClick={toggleLeft}
+                    >
+                      {`<--`}
+                  </button>
+                  <button 
+                    css={css`
+                      position: absolute;
+                      top: 60px; 
+                      left: 0px;
+                      width: 50px;
+                      height: 20px;
+                    `}
+                    onClick={toggleTimer}
+                    >
+                      {`:)`}
+                  </button>
+                </>     
               }
             </>
           :

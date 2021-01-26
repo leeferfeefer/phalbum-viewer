@@ -6,19 +6,31 @@ import React, {useState, useEffect, useImperativeHandle, forwardRef} from 'react
 
 const ImageGallery = (props, ref) => {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const {images, isWaitingForImages, onSlide} = props;
+    let intervalTimer;
+
+    const startTimer = () => {
+        if (!!!intervalTimer) {
+            intervalTimer = setInterval(() => {
+                if (!isWaitingForImages) {
+                    if (currentIndex === images.length-1) {
+                        setCurrentIndex(0);
+                    } else {
+                        setCurrentIndex(currentIndex+1);
+                    }
+                    onSlide(currentIndex);
+                }            
+            }, 10000); // in ms
+        }        
+    };
+
+    const stopTimer = () => {
+        !!intervalTimer && clearInterval(intervalTimer);
+    };
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            if (!props.isWaitingForImages) {
-                if (currentIndex === props.images.length-1) {
-                    setCurrentIndex(0);
-                } else {
-                    setCurrentIndex(currentIndex+1);
-                }
-                props.onSlide(currentIndex);
-            }            
-        }, 10000); // in ms
-        return () => clearInterval(interval);
+        startTimer();
+        return () => stopTimer();
     });
 
     useImperativeHandle(ref, () => ({
@@ -27,6 +39,25 @@ const ImageGallery = (props, ref) => {
         },
         goToIndex: (index) => {
             setCurrentIndex(index);
+        },
+        goRight: () => {       
+            stopTimer();
+            const newIndex = currentIndex+1;
+            if (newIndex < images.length) {            
+                onSlide(newIndex);                
+                setCurrentIndex(newIndex);            
+            }            
+        },
+        goLeft: () => {
+            stopTimer();
+            const newIndex = currentIndex-1;
+            if (newIndex > -1) {            
+                onSlide(newIndex);                
+                setCurrentIndex(newIndex);
+            }
+        },
+        startTimer: () => {
+            startTimer();
         }
     }));    
 
@@ -43,7 +74,7 @@ const ImageGallery = (props, ref) => {
                 max-width: ${window.innerWidth}px;
                 max-height: ${window.innerHeight}px;`        
             }
-            src={props.images[currentIndex]?.original}
+            src={images[currentIndex]?.original}
         />
     )
 };
