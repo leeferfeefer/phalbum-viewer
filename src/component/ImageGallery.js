@@ -1,42 +1,24 @@
 /** @jsxImportSource @emotion/react */
 import {css, jsx } from '@emotion/react'
-
-import React, {useState, useEffect, useImperativeHandle, forwardRef, useRef} from 'react';
-
+import React, {useState, useImperativeHandle, forwardRef} from 'react';
+import {useInterval} from '../hook/UseIntervalHook';
 
 const ImageGallery = (props, ref) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const {images, isWaitingForImages, onSlide} = props;
-    const intervalTimerRef = useRef();
+    const [delay, setDelay] = useState(10000);
+    const [isRunning, setIsRunning] = useState(true);
 
-    const startTimer = () => {
-        if (!!!intervalTimerRef.current) {
-            console.log("creating timer...");
-            intervalTimerRef.current = setInterval(() => {
-                if (!isWaitingForImages) {
-                    if (currentIndex === images.length-1) {
-                        setCurrentIndex(0);
-                    } else {
-                        setCurrentIndex(currentIndex+1);
-                    }
-                    onSlide(currentIndex);
-                }            
-            }, 10000); // in ms
-        }        
-    };
-
-    const stopTimer = () => {
-        if (!!intervalTimerRef.current) {
-            clearInterval(intervalTimerRef.current);
-            intervalTimerRef.current = undefined;
-            console.log("destroying timer...");
-        }
-    };
-
-    useEffect(() => {
-        startTimer();
-        return () => stopTimer();
-    }, []);
+    useInterval(() => {
+        if (!isWaitingForImages) {
+            if (currentIndex === images.length-1) {
+                setCurrentIndex(0);
+            } else {
+                setCurrentIndex(currentIndex+1);
+            }
+            onSlide(currentIndex);
+        }    
+    }, isRunning ? delay : null)
 
     useImperativeHandle(ref, () => ({
         getCurrentIndex: () => {
@@ -46,8 +28,7 @@ const ImageGallery = (props, ref) => {
             setCurrentIndex(index);
         },
         goRight: () => {       
-            console.log("calling stop timer...")
-            stopTimer();
+            setIsRunning(false);
             const newIndex = currentIndex+1;
             if (newIndex < images.length) {            
                 onSlide(newIndex);                
@@ -55,8 +36,7 @@ const ImageGallery = (props, ref) => {
             }            
         },
         goLeft: () => {
-            console.log("calling stop timer...")
-            stopTimer();
+            setIsRunning(false);
             const newIndex = currentIndex-1;
             if (newIndex > -1) {            
                 onSlide(newIndex);                
@@ -64,7 +44,7 @@ const ImageGallery = (props, ref) => {
             }
         },
         startTimer: () => {
-            startTimer();
+            setIsRunning(true);
         }
     }));    
 
