@@ -1,11 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import {css, jsx } from '@emotion/react'
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import ImageGallery from './component/ImageGallery';
 import AxiosService from './service/Axios.service';
 import Loader from "react-loader-spinner";
 import Image from './model/Image';
-import { FullScreen, useFullScreenHandle } from "react-full-screen";
+import {FullScreen, useFullScreenHandle} from "react-full-screen";
 
 const BATCH_SIZE = 5;
 
@@ -17,7 +17,7 @@ function App() {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isWaitingForImages, setIsWaitingForImages] = useState(false);
   const galleryRef = useRef(null);
-  const handle = useFullScreenHandle();
+  const fullScreenHandle = useFullScreenHandle();
 
   useEffect(() => {
     getImages(true);    
@@ -52,13 +52,17 @@ function App() {
   
   const toggleFullScreen = () => {
     if (isFullScreen) {
-      handle.exit();
-      setIsFullScreen(false);
+      fullScreenHandle.exit();
     } else {
-      handle.enter();
-      setIsFullScreen(true);
+      fullScreenHandle.enter();
     }
   }
+
+  const handleFullScreenChange = useCallback((state, handle) => {
+    if (handle === fullScreenHandle) {
+      setIsFullScreen(state);
+    }    
+  }, [fullScreenHandle]);
 
   const toggleRight = () => {
     galleryRef.current.goRight();
@@ -88,7 +92,7 @@ function App() {
         height: ${window.innerHeight}px;
         width: ${window.innerWidth}px;`               
     }>
-      <FullScreen handle={handle}>
+      <FullScreen handle={fullScreenHandle} onChange={handleFullScreenChange}>
         {isLoaderVisible && 
           <Loader
             type="Puff"
@@ -116,7 +120,7 @@ function App() {
                 `}
                 onClick={toggleFullScreen}
                 >
-                  {`[  ]`}
+                  {isFullScreen ? `[ x ]` : `[  ]`}
               </button>           
               <button 
               css={css`
