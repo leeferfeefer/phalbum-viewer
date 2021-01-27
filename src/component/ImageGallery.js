@@ -59,7 +59,9 @@ const ImageGallery = (props, ref) => {
                 margin-top: auto;
                 margin-bottom: auto;  
                 max-width: ${window.innerWidth}px;
-                max-height: ${window.innerHeight}px;`        
+                max-height: ${window.innerHeight}px;
+                image-orientation: none;
+                `        
             }
             src={images[currentIndex]?.original}
         />
