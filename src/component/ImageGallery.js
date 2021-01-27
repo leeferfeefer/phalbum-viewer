@@ -60,7 +60,7 @@ const ImageGallery = (props, ref) => {
                 margin-bottom: auto;  
                 max-width: ${window.innerWidth}px;
                 max-height: ${window.innerHeight}px;
-                image-orientation: none;
+                image-orientation: from-image;
                 `        
             }
             src={images[currentIndex]?.original}
