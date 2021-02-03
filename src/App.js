@@ -2,7 +2,6 @@
 import {css, jsx } from '@emotion/react'
 import React, {useState, useEffect, useRef, useCallback} from 'react';
 import ImageGallery from './component/ImageGallery';
-import AxiosService from './service/Axios.service';
 import Loader from "react-loader-spinner";
 import Image from './model/Image';
 import ReactFullscreen from 'react-easyfullscreen';
@@ -15,9 +14,6 @@ function App() {
   const [images, setImages] = useState([]);
   const [isError, setIsError] = useState(false); 
   const [isLoaderVisible, setIsLoaderVisible] = useState(false);
-  const [batchIndex, setBatchIndex] = useState(0);
-  const [isFullScreen, setIsFullScreen] = useState(false);
-  const [isWaitingForImages, setIsWaitingForImages] = useState(false);
   const galleryRef = useRef();
 
   useEffect(() => {
@@ -25,57 +21,35 @@ function App() {
   }, []);
 
   const openDir = async () => {
-    const filesInDirectory = await directoryOpen({
-      recursive: true,
-    });
-    console.log("files: ", filesInDirectory);
-
-    let files = [];
-    for (const file of filesInDirectory) {       
-      const fileReader = new FileReader();    
-      fileReader.readAsDataURL(file);
-      fileReader.onload = () => {
-        const fileInfo = {    
-            original: fileReader.result,
-        };
-        files.push(fileInfo);  
-
-        if (files.length === filesInDirectory.length) {
-          setImages(files);             
-        }  
-      }                      
+    try {
+      setIsError(false);
+      setIsLoaderVisible(true);
+      const filesInDirectory = await directoryOpen({
+        recursive: true,
+      });
+      console.log("files: ", filesInDirectory);
+  
+      let files = [];
+      for (const file of filesInDirectory) {       
+        const fileReader = new FileReader();    
+        fileReader.readAsDataURL(file);
+        fileReader.onload = () => {
+          const fileInfo = {    
+              original: fileReader.result,
+          };
+          files.push(fileInfo);  
+  
+          if (files.length === filesInDirectory.length) {
+            setIsLoaderVisible(false);
+            setImages(files);             
+          }  
+        }                      
+      }
+    } catch (error) {
+      console.log("uh oh: ", error);
+      setIsError(true);
+      setIsLoaderVisible(false);
     }
-  };
-
-  const getImages = async (initial) => {
-    // setIsError(false);
-    // let imageResponse;
-    // let newImages;
-    // try {
-    //   if (initial) setIsLoaderVisible(true);
-    //   setIsWaitingForImages(true);
-    //   imageResponse = await AxiosService.getImages(batchIndex, BATCH_SIZE);
-    //   if (initial) setIsLoaderVisible(false);
-    //   console.log("imageResponse", imageResponse)
-    //   if (imageResponse?.images?.length > 0) {
-    //     newImages = await Image.convertImagesDTOToImages(imageResponse.images)
-    //     if (images.length === 0) {
-    //       setImages(newImages);
-    //     } else {
-    //       setImages([...images, ...newImages]);  
-    //     }        
-    //     setBatchIndex(batchIndex+1); 
-    //   }     
-    // } catch (error) {
-    //   console.log("error", error)
-    //   if (initial) setIsLoaderVisible(false);
-    //   if (initial) setIsError(true);
-    // }    
-    // setIsWaitingForImages(false);
-  };
-
-  const openFile = async () => {
-    openDir();
   };
 
   const toggleRight = () => {
@@ -88,13 +62,6 @@ function App() {
 
   const toggleTimer = () => {
     galleryRef.current.startTimer();
-  }
-
-  const onSlide = (currentIndex) => {
-    // call get images 1 image before
-    if (images.length > 0 && currentIndex === images.length-2) {
-      // getImages();
-    }
   }
 
   return (
@@ -122,9 +89,7 @@ function App() {
                   <ImageGallery
                     ref={galleryRef}
                     images={images}
-                    onSlide={onSlide}
                     slideDuration={10000}
-                    isWaitingForImages={isWaitingForImages}
                   />
                   <button 
                     css={css`
@@ -134,7 +99,7 @@ function App() {
                       width: 50px;
                       height: 20px;
                     `}
-                    onClick={openFile}>
+                    onClick={onToggle}>
                       {`[  ]`}
                   </button>           
                   <button 
@@ -172,7 +137,19 @@ function App() {
                     onClick={toggleTimer}
                     >
                       {`:)`}
-                  </button>              
+                  </button>      
+                  <button 
+                    css={css`
+                      position: absolute;
+                      top: 80px; 
+                      left: 0px;
+                      width: 50px;
+                      height: 20px;
+                    `}
+                    onClick={openDir}
+                    >
+                      {`[<--`}
+                  </button>          
                 </>
               :
               <div style={{color: 'red'}}> Error! Try again.</div>
