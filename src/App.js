@@ -6,6 +6,8 @@ import AxiosService from './service/Axios.service';
 import Loader from "react-loader-spinner";
 import Image from './model/Image';
 import ReactFullscreen from 'react-easyfullscreen';
+import {directoryOpen} from 'browser-fs-access';
+
 
 const BATCH_SIZE = 5;
 
@@ -22,31 +24,58 @@ function App() {
     getImages(true);    
   }, []);
 
+  const openDir = async () => {
+    const filesInDirectory = await directoryOpen({
+      recursive: true,
+    });
+    console.log("files: ", filesInDirectory);
+
+    let files = [];
+    for (const file of filesInDirectory) {       
+      const fileReader = new FileReader();    
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        const fileInfo = {    
+            original: fileReader.result,
+        };
+        files.push(fileInfo);  
+
+        if (files.length === filesInDirectory.length) {
+          setImages(files);             
+        }  
+      }                      
+    }
+  };
+
   const getImages = async (initial) => {
-    setIsError(false);
-    let imageResponse;
-    let newImages;
-    try {
-      if (initial) setIsLoaderVisible(true);
-      setIsWaitingForImages(true);
-      imageResponse = await AxiosService.getImages(batchIndex, BATCH_SIZE);
-      if (initial) setIsLoaderVisible(false);
-      console.log("imageResponse", imageResponse)
-      if (imageResponse?.images?.length > 0) {
-        newImages = await Image.convertImagesDTOToImages(imageResponse.images)
-        if (images.length === 0) {
-          setImages(newImages);
-        } else {
-          setImages([...images, ...newImages]);  
-        }        
-        setBatchIndex(batchIndex+1); 
-      }     
-    } catch (error) {
-      console.log("error", error)
-      if (initial) setIsLoaderVisible(false);
-      if (initial) setIsError(true);
-    }    
-    setIsWaitingForImages(false);
+    // setIsError(false);
+    // let imageResponse;
+    // let newImages;
+    // try {
+    //   if (initial) setIsLoaderVisible(true);
+    //   setIsWaitingForImages(true);
+    //   imageResponse = await AxiosService.getImages(batchIndex, BATCH_SIZE);
+    //   if (initial) setIsLoaderVisible(false);
+    //   console.log("imageResponse", imageResponse)
+    //   if (imageResponse?.images?.length > 0) {
+    //     newImages = await Image.convertImagesDTOToImages(imageResponse.images)
+    //     if (images.length === 0) {
+    //       setImages(newImages);
+    //     } else {
+    //       setImages([...images, ...newImages]);  
+    //     }        
+    //     setBatchIndex(batchIndex+1); 
+    //   }     
+    // } catch (error) {
+    //   console.log("error", error)
+    //   if (initial) setIsLoaderVisible(false);
+    //   if (initial) setIsError(true);
+    // }    
+    // setIsWaitingForImages(false);
+  };
+
+  const openFile = async () => {
+    openDir();
   };
 
   const toggleRight = () => {
@@ -64,7 +93,7 @@ function App() {
   const onSlide = (currentIndex) => {
     // call get images 1 image before
     if (images.length > 0 && currentIndex === images.length-2) {
-      getImages();
+      // getImages();
     }
   }
 
@@ -105,7 +134,7 @@ function App() {
                       width: 50px;
                       height: 20px;
                     `}
-                    onClick={onToggle}>
+                    onClick={openFile}>
                       {`[  ]`}
                   </button>           
                   <button 
