@@ -1,9 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import {css, jsx } from '@emotion/react'
-import React, {useState, useEffect, useRef, useCallback} from 'react';
+import React, {useState, useRef} from 'react';
 import ImageGallery from './component/ImageGallery';
 import Loader from "react-loader-spinner";
-import Image from './model/Image';
 import ReactFullscreen from 'react-easyfullscreen';
 import {directoryOpen} from 'browser-fs-access';
 
@@ -15,10 +14,6 @@ function App() {
   const [isError, setIsError] = useState(false); 
   const [isLoaderVisible, setIsLoaderVisible] = useState(false);
   const galleryRef = useRef();
-
-  useEffect(() => {
-    getImages(true);    
-  }, []);
 
   const openDir = async () => {
     try {
